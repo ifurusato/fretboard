@@ -1,0 +1,177 @@
+@font-face { font-family: 'Teko'; src: URL('Teko-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Teko SemiBold'; src: URL('Teko-SemiBold.ttf') format('truetype'); }
+/* @import url(https://fonts.googleapis.com/css?family=Teko:400,600|Abel); */
+
+/*
+ * CSS Stylesheet for Barkhausen Fretboard
+ * Copyright 2015-2023 Murray Altheim. All Rights Reserved.
+ */
+
+body {
+  margin: 4em ;
+  font: 90% "Teko", "Calibri", sans-serif;
+  background-color: #16080C ;
+}
+#wrapper {
+  padding: 1.5em 3em 3em 3em ;
+  background-color: #5e4a71 ;
+  border-radius: 17px; -moz-border-radius: 17px; -webkit-border-radius: 17px;
+}
+h1 {
+ margin: 0; padding: 0;
+ font-size: 320%; color: #e3c5ff; font-weight: normal; 
+}
+label {
+ color: white;
+ font-size: 150%;
+ padding-right: 0.2em;
+}
+#ctrl * label {
+ color: white;
+ font-size: 170%;
+}
+#scaledesc { 
+ padding-left: 0.2em ; color: white;
+}
+.action table { 
+ margin-top: 1em ;
+ width: 100%; 
+}
+div.tutor {
+  background-color: #e4e4e4 ;
+  padding: 1em 2em;
+  border-radius: 17px; -moz-border-radius: 17px; -webkit-border-radius: 17px;
+}
+div.svg {
+  text-align: center;
+  margin: 2em auto ;
+  padding: 3em ;
+  background-color: #eeeeee ;
+  border-radius: 17px; -moz-border-radius: 17px; -webkit-border-radius: 17px;
+  overflow-x: auto;
+}
+#fretboard rect { /* nut */
+   fill:#000000; stroke:#000000;
+   fill-opacity:1;stroke-width:2;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;
+   stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;
+}
+#fretboard path { /* fretboard background */
+   fill:#c7d5e9; stroke:#929292;
+   fill-opacity:0.58706468;stroke-width:1.41233921;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;
+   stroke-opacity:0.53731348;stroke-dashoffset:0;
+}
+#r7box { /* seventh string rect */
+   display: hidden;
+   fill:#eeeeee; stroke:white;fill-opacity:1;stroke-width:0;
+}
+#r7boxc { /* seventh string rect2 */
+   display: hidden;
+   fill:#eeeeee; stroke:white;fill-opacity:1;stroke-width:0;
+}
+#tfoot {
+  width: 100%;
+}
+#seventhLabel {
+  display: block;
+  float: left;
+  white-space: nowrap;
+  vertical-align:middle;
+}
+#seventhCheck {
+  vertical-align:middle;
+  margin-top: -0.1em;
+}
+g.xstring g path { /* don't play string 'x' markers */
+  fill:none;stroke:#000000;stroke-width:2.29999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;
+  stroke-opacity:1;stroke-dasharray:none;
+  display: none ;
+}
+#dots path {
+   fill:#797c80; stroke:#c7d5ea;
+   fill-opacity:1;stroke-width:1.23414803;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;
+   stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;
+}
+#dots #twelve1, #dots #twelve2 {
+   fill:#444444; stroke: #333333;
+}
+#strings path {
+   stroke:#000000;
+   fill:none;stroke-width:1.20000005;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;
+}
+#fretlines path {
+   stroke:#000000;
+   fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;
+}
+g.fret path { /* individual fret position circular marker */
+   fill:#aaaaaa; fill-opacity:1;stroke:none;
+}
+tspan {
+   font-family: "Calibri", sans-serif;
+   font-size:16px;font-style:normal;font-variant:normal;
+   font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;
+}
+g.fret g text tspan { /* individual fret position text descriptors */
+   fill:#ffffff;fill-opacity:1;stroke:none;
+}
+g#open path {
+  fill:#3a5f94;fill-opacity:1;stroke:none;
+}
+g#open text tspan {
+   fill:#ffffff;fill-opacity:1;stroke:none;
+}
+#thead, #tfoot {
+   width: 100%;
+}
+#xlink a {
+   color: #e3c5ff;
+   text-decoration: none; padding-bottom: 0; line-height: 70%;
+}
+#footer_copyright a {
+   color: #e3c5ff; text-decoration: none;
+   border-bottom: thin dotted #e3c5ff;
+}
+#footer_copyright a:hover {
+   color: white;
+}
+#xlink a:hover {
+   color: #ffffff;
+}
+#copyright {
+   font-family: "Teko", "Calibri", sans-serif; font-size:100%; font-style:normal; font-variant:normal; font-weight:normal;
+   font-stretch:normal; text-align:middle; line-height:125%; writing-mode:lr-tb;text-anchor:start;
+   fill:#bea1a3; fill-opacity:1; stroke:none;
+}
+
+#info {
+  text-align: center !important;
+  margin-left: auto; margin-right: auto;
+  max-width: 30em !important;
+  color: transparent;
+  background-color: transparent;
+  border-radius: 7px; -moz-border-radius: 7px; -webkit-border-radius: 7px;
+}
+#info table:hover { 
+  color: #ffffff;
+  background-color: #ea777e;
+  -webkit-transition: all 800ms ease;
+  -moz-transition:    all 800ms ease;
+  -ms-transition:     all 800ms ease;
+  -o-transition:      all 800ms ease;
+  transition:         all 800ms ease;
+}
+#info table {
+  padding: 4px 8px;
+  border-collapse: separate;
+  width:100%;
+}
+#info table td {
+  width: 1.0em;
+}
+#scale, #interval { 
+  font-size: 180% !important; 
+}
+
+#footer_copyright {
+   font-family: "Teko", "Calibri", sans-serif; font-size: 120%;
+   margin: 2em 15%; text-align: center; color: #ffffff ;
+}

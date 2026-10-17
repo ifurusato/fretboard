@@ -1,0 +1,490 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Notes in Scale</title>
+  <link rel="stylesheet" href="./style/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="./style/fretboard.css" />
+  <script src="./script/jquery-1.12.4.min.js"></script>
+  <script src="./script/jquery-ui.min.js"></script>
+<!--<script src="./script/d3.v7.min.js"></script> -->
+  <script src="./script/d3.min.js"></script> 
+  <script src="./script/fretboard.js"></script>
+</head>
+<body>
+  <script>0</script>
+  <script>
+    /* to prevent Firefox FOUC, this must be here */
+    let FF_FOUC_FIX;
+  </script>
+<div id="wrapper">
+<table id="thead" summary="formatting">
+  <tbody><tr>
+    <td width="50%" align="left">
+      <h1>Notes in Scale: <span id="scaledesc"></span></h1>
+    </td>
+    <td width="50%" align="right">
+      <h1 id="xlink"><a href="https://barkhausen.nz/2015/12/guitar-notes-in-scale-tool/">Barkhausen</a></h1>
+    </td>
+  </tr>
+</tbody></table>
+<div class="action">
+  <table summary="formatting" border="0">
+    <tbody><tr>
+      <td align="left">
+        <label for="keyselect">Key:</label>&nbsp;
+        <select id="keyselect">
+          <option value="C" selected="selected">C</option>
+          <option value="C♯/D♭">C♯/D♭</option>
+          <option value="D">D</option>
+          <option value="D♯/E♭">D♯/E♭</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+          <option value="F♯/G♭">F♯/G♭</option>
+          <option value="G">G</option>
+          <option value="G♯/A♭">G♯/A♭</option>
+          <option value="A">A</option>
+          <option value="A♯/B♭">A♯/B♭</option>
+          <option value="B">B</option></select>
+        <span style="margin-right:1em"></span>
+        <label for="scaleselect">Scale:</label>&nbsp;
+        <select id="scaleselect" class="form-control input-sm">
+          <option value="ionian" selected="selected">Ionian (AKA Major)</option>
+          <option value="dorian">Dorian</option>
+          <option value="phrygian">Phrygian</option>
+          <option value="phrygian-dominant">Phrygian Dominant</option>
+          <option value="lydian">Lydian</option>
+          <option value="mixolydian">Mixolydian</option>
+          <option value="mixolydian-6♭">Mixolydian Flat 6</option>
+          <option value="aeolian">Aeolian (AKA Natural Minor)</option>
+          <option value="locrian">Locrian</option>
+          <option value="major-pentatonic">Major Pentatonic</option>
+          <option value="minor-pentatonic">Minor Pentatonic</option>
+          <option value="major-blues">Major Blues</option>
+          <option value="minor-blues">Minor Blues</option>
+          <option value="harmonic-minor">Harmonic Minor</option>
+          <option value="melodic-minor-asc">Melodic Minor (ascending)</option>
+          <option value="melodic-minor-des">Melodic Minor (descending)</option>
+          <option value="enigmatic">Enigmatic</option>
+          <option value="algerian">Algerian</option>
+          <option value="arabian">Arabian (AKA Diminished)</option>
+          <option value="byzantine">Byzantine</option>
+          <option value="egyptian">Egyptian</option>
+          <option value="persian">Persian</option>
+          <option value="hindu">Hindu</option>
+          <option value="asavari-asc">Asavari (ascending)</option>
+          <option value="asavari-des">Asavari (descending)</option>
+          <option value="hirajoshi">Hirajōshi</option>
+          <option value="yo">Yo</option>
+          <option value="in">In</option>
+          <option value="insen">Insen</option>
+          <option value="neopolitan-major">Neopolitan Major</option>
+          <option value="neopolitan-minor">Neopolitan Minor</option>
+          <option value="hungarian-gypsy">Hungarian Gypsy</option>
+          <option value="spanish-gypsy">Spanish Gypsy</option>
+          <option value="ukrainian-dorian">Ukrainian Dorian</option>
+          <option value="moorish-phrygian">Moorish Phrygian</option>
+          <option value="mixo-dorian-blues">Mixo-Dorian Blues</option>
+          <option value="half-whole-dim">Half-Whole Diminished</option>
+          <option value="whole-tone">Messian First Mode (Whole Tone)</option>
+          <option value="mess-2">Messiaen Second Mode</option>
+          <option value="mess-3">Messiaen Third Mode</option>
+          <option value="mess-4">Messiaen Fourth Mode</option>
+          <option value="mess-5">Messiaen Fifth Mode</option>
+          <option value="mess-6">Messiaen Sixth Mode</option>
+          <option value="mess-7">Messiaen Seventh Mode</option>
+        </select>
+        <span style="margin-right:0.5em"></span>
+        <button id="setchord">Set</button>
+      </td>
+      <td align="right">
+        <label for="intervalselect">Interval:</label>&nbsp;
+        <select id="intervalselect">
+          <option value="0" selected="selected">Unison (0)</option>
+          <option value="1">Minor Second (m2)</option>
+          <option value="2">Major Second (M2)</option>
+          <option value="3">Minor Third (m3)</option>
+          <option value="4">Major Third (M3)</option>
+          <option value="5">Perfect Fourth (P4)</option>
+          <option value="6">Augmented Fourth (A4)</option>
+          <option value="7">Perfect Fifth (P5)</option>
+          <option value="8">Minor Sixth (m6)</option>
+          <option value="9">Major Sixth (M6)</option>
+          <option value="10">Minor Seventh (m7)</option>
+          <option value="11">Major Seventh (M7)</option>
+          <option value="12">Octave (Oct)</option>
+        </select>
+        <button id="hilightInterval">Hilight</button>
+        <span style="margin-right:2em"></span>
+      </td>
+      <td align="right">
+        <label for="noteselect">Note:</label>&nbsp;
+        <select id="noteselect">
+          <option value="C" selected="selected">C</option>
+          <option value="C♯/D♭">C♯/D♭</option>
+          <option value="D">D</option>
+          <option value="D♯/E♭">D♯/E♭</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+          <option value="F♯/G♭">F♯/G♭</option>
+          <option value="G">G</option>
+          <option value="G♯/A♭">G♯/A♭</option>
+          <option value="A">A</option>
+          <option value="A♯/B♭">A♯/B♭</option>
+          <option value="B">B</option>
+        </select>
+        <button id="hilightNote">Hilight</button>
+        <span style="margin-right:2em"></span>
+        <button id="all">All</button>
+        <button id="reset">Reset</button>
+      </td>
+    </tr>
+  </tbody></table>
+</div>
+<div class="svg">
+<svg id="svg2" version="1.2" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" width="1570" height="300">
+  <defs id="defs4"></defs>
+  <g id="g4513"><g id="fretboard">
+    <path d="m 40,230 0,-200 1450,-1e-6 c 20,50 20,150 0,200 z"></path><rect width="10" height="240" x="30" y="30"></rect></g>
+  <g id="dots">
+    <path d="m 190,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 310,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 430,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 550,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 910,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 1030,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 1150,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path d="m 1270,122.11708 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path>
+    <path id="twelve1" d="m 730,82.095648 a 7.8829258,7.8829258 0 1 1 0,15.765844 7.8829258,7.8829258 0 1 1 0,-15.765844 z"></path>
+    <path id="twelve2" d="m 730,162.07483 a 7.8829258,7.8829258 0 1 1 0,15.76584 7.8829258,7.8829258 0 1 1 0,-15.76584 z"></path></g>
+  </g>
+  <g id="strings">
+    <path d="m 40,30 1450,0"></path><!-- 1 -->
+    <path d="m 40,70 1450,0"></path><!-- 2 -->
+    <path d="m 40,110 1450,0"></path><!-- 3 -->
+    <path d="m 40,150 1450,0"></path><!-- 4 -->
+    <path d="m 40,190 1450,0"></path><!-- 5 -->
+    <path d="m 40,230 1450,0"></path><!-- 6 -->
+    <path d="m 40,270 1450,0"></path><!-- 7 -->
+  </g>
+  <g id="fretlines">
+    <path d="M 100,30 100,270"></path><!-- A -->
+    <path d="M 160,30 160,270"></path><!-- B -->
+    <path d="M 220,30 220,270"></path><!-- C -->
+    <path d="M 280,30 280,270"></path><!-- D -->
+    <path d="M 340,30 340,270"></path><!-- E -->
+    <path d="M 400,30 400,270"></path><!-- F -->
+    <path d="M 460,30 460,270"></path><!-- G -->
+    <path d="M 520,30 520,270"></path><!-- H -->
+    <path d="M 580,30 580,270"></path><!-- I -->
+    <path d="M 640,30 640,270"></path><!-- J -->
+    <path d="M 700,30 700,270"></path><!-- K -->
+    <path d="M 760,30 760,270"></path><!-- L -->
+    <path d="M 820,30 820,270"></path><!-- M -->
+    <path d="M 880,30 880,270"></path><!-- N -->
+    <path d="M 940,30 940,270"></path><!-- O -->
+    <path d="M 1000,30 1000,270"></path><!-- P -->
+    <path d="M 1060,30 1060,270"></path><!-- Q -->
+    <path d="M 1120,30 1120,270"></path><!-- R -->
+    <path d="M 1180,30 1180,270"></path><!-- S -->
+    <path d="M 1240,30 1240,270"></path><!-- T -->
+    <path d="M 1300,30 1300,270"></path><!-- U -->
+    <path d="M 1360,30 1360,270"></path><!-- V -->
+    <path d="M 1420,30 1420,270"></path><!-- W -->
+    <path d="M 1480,30 1480,270"></path><!-- X -->
+  </g>
+  <g id="r7"><rect id="r7box" visibility="hidden" width="1490" height="50" x="0" y="232"></rect></g>
+  <g id="frets">
+    <g class="fret" id="fret0">
+      <g id="f0s1" class="s1" transform="translate(0.4854663,-1)"><path d="m 26.101735,31 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="36.054691" x="13.609548"><tspan y="36.054691" x="13.609548">1</tspan></text></g>
+      <g id="f0s2" class="s2" transform="translate(0.4854663,-1)"><path d="m 26.101735,71 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="76.054695" x="13.609548"><tspan y="76.054695" x="13.609548">2</tspan></text></g>
+      <g id="f0s3" class="s3" transform="translate(0.4854663,-1)"><path d="m 26.101735,111 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="116.05469" x="13.609548"><tspan y="116.05469" x="13.609548">3</tspan></text></g>
+      <g id="f0s4" class="s4" transform="translate(0.4854663,-1)"><path d="m 26.101735,151 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="156.05469" x="13.609548"><tspan y="156.05469" x="13.609548">4</tspan></text></g>
+      <g id="f0s5" class="s5" transform="translate(0.4854663,-1)"><path d="m 26.101735,191 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="196.05469" x="13.609548"><tspan y="196.05469" x="13.609548">5</tspan></text></g>
+      <g id="f0s7" class="s7" transform="translate(0.4854663,-1)"><path d="m 26.101735,271 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path><text y="276.05469" x="13.609548"><tspan y="276.05469" x="13.609548">7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret1">
+      <g id="f1s1" class="s1"><path d="m 83.5,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.285156" y="35.221306"><tspan x="70.285156" y="35.221306">A1</tspan></text></g>
+      <g id="f1s2" class="s2"><path d="m 83.5,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.238281" y="75.221306"><tspan x="70.238281" y="75.221306">A2</tspan></text></g>
+      <g id="f1s3" class="s3"><path d="m 83.5,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.261719" y="115.22131"><tspan x="70.261719" y="115.22131">A3</tspan></text></g>
+      <g id="f1s4" class="s4"><path d="m 83.5,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.082031" y="155.2213"><tspan x="70.082031" y="155.2213">A4</tspan></text></g>
+      <g id="f1s5" class="s5"><path d="m 83.5,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.285156" y="195.2213"><tspan x="70.285156" y="195.2213">A5</tspan></text></g>
+      <g id="f1s6" class="s6"><path d="m 83.5,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.160156" y="235.2213"><tspan x="70.160156" y="235.2213">A6</tspan></text></g>
+      <g id="f1s7" class="s7"><path d="m 83.5,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="70.160156" y="275.2213"><tspan x="70.160156" y="275.2213">A7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret2">
+      <g id="f2s1" class="s1"><path d="m 143.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.26172" y="35.221306"><tspan x="130.26172" y="35.221306">B1</tspan></text></g>
+      <g id="f2s2" class="s2"><path d="m 143.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.21484" y="75.221306"><tspan x="130.21484" y="75.221306">B2</tspan></text></g>
+      <g id="f2s3" class="s3"><path d="m 143.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.23828" y="115.22131"><tspan x="130.23828" y="115.22131">B3</tspan></text></g>
+      <g id="f2s4" class="s4"><path d="m 143.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.05859" y="155.2213"><tspan x="130.05859" y="155.2213">B4</tspan></text></g>
+      <g id="f2s5" class="s5"><path d="m 143.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.26172" y="195.2213"><tspan x="130.26172" y="195.2213">B5</tspan></text></g>
+      <g id="f2s6" class="s6"><path d="m 143.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.13672" y="235.2213"><tspan x="130.13672" y="235.2213">B6</tspan></text></g>
+      <g id="f2s7" class="s7"><path d="m 143.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="130.13672" y="275.2213"><tspan x="130.13672" y="275.2213">B7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret3">
+      <g id="f3s1" class="s1"><path d="m 203.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.50391" y="35.221306"><tspan x="190.50391" y="35.221306">C1</tspan></text></g>
+      <g id="f3s2" class="s2"><path d="m 203.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.45703" y="75.221306"><tspan x="190.45703" y="75.221306">C2</tspan></text></g>
+      <g id="f3s3" class="s3"><path d="m 203.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.48047" y="115.22131"><tspan x="190.48047" y="115.22131">C3</tspan></text></g>
+      <g id="f3s4" class="s4"><path d="m 203.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.30078" y="155.2213"><tspan x="190.30078" y="155.2213">C4</tspan></text></g>
+      <g id="f3s5" class="s5"><path d="m 203.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.50391" y="195.2213"><tspan x="190.50391" y="195.2213">C5</tspan></text></g>
+      <g id="f3s6" class="s6"><path d="m 203.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.37891" y="235.2213"><tspan x="190.37891" y="235.2213">C6</tspan></text></g>
+      <g id="f3s7" class="s7"><path d="m 203.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="190.37891" y="275.2213"><tspan x="190.37891" y="275.2213">C7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret4">
+      <g id="f4s1" class="s1"><path d="m 263.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.26172" y="35.221306"><tspan x="250.26172" y="35.221306">D1</tspan></text></g>
+      <g id="f4s2" class="s2"><path d="m 263.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.21484" y="75.221306"><tspan x="250.21484" y="75.221306">D2</tspan></text></g>
+      <g id="f4s3" class="s3"><path d="m 263.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.23828" y="115.22131"><tspan x="250.23828" y="115.22131">D3</tspan></text></g>
+      <g id="f4s4" class="s4"><path d="m 263.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.05859" y="155.2213"><tspan x="250.05859" y="155.2213">D4</tspan></text></g>
+      <g id="f4s5" class="s5"><path d="m 263.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.26172" y="195.2213"><tspan x="250.26172" y="195.2213">D5</tspan></text></g>
+      <g id="f4s6" class="s6"><path d="m 263.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.13672" y="235.2213"><tspan x="250.13672" y="235.2213">D6</tspan></text></g>
+      <g id="f4s7" class="s7"><path d="m 263.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="250.13672" y="275.2213"><tspan x="250.13672" y="275.2213">D7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret5">
+      <g id="f5s1" class="s1"><path d="m 323.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.26172" y="35.221306"><tspan x="310.26172" y="35.221306">E1</tspan></text></g>
+      <g id="f5s2" class="s2"><path d="m 323.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.21484" y="75.221306"><tspan x="310.21484" y="75.221306">E2</tspan></text></g>
+      <g id="f5s3" class="s3"><path d="m 323.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.23828" y="115.22131"><tspan x="310.23828" y="115.22131">E3</tspan></text></g>
+      <g id="f5s4" class="s4"><path d="m 323.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.05859" y="155.2213"><tspan x="310.05859" y="155.2213">E4</tspan></text></g>
+      <g id="f5s5" class="s5"><path d="m 323.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.26172" y="195.2213"><tspan x="310.26172" y="195.2213">E5</tspan></text></g>
+      <g id="f5s6" class="s6"><path d="m 323.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.13672" y="235.2213"><tspan x="310.13672" y="235.2213">E6</tspan></text></g>
+      <g id="f5s7" class="s7"><path d="m 323.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="310.13672" y="275.2213"><tspan x="310.13672" y="275.2213">E7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret6">
+      <g id="f6s1" class="s1"><path d="m 383.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.26172" y="35.221306"><tspan x="370.26172" y="35.221306">F1</tspan></text></g>
+      <g id="f6s2" class="s2"><path d="m 383.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.21484" y="75.221306"><tspan x="370.21484" y="75.221306">F2</tspan></text></g>
+      <g id="f6s3" class="s3"><path d="m 383.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.23828" y="115.22131"><tspan x="370.23828" y="115.22131">F3</tspan></text></g>
+      <g id="f6s4" class="s4"><path d="m 383.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.05859" y="155.2213"><tspan x="370.05859" y="155.2213">F4</tspan></text></g>
+      <g id="f6s5" class="s5"><path d="m 383.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.26172" y="195.2213"><tspan x="370.26172" y="195.2213">F5</tspan></text></g>
+      <g id="f6s6" class="s6"><path d="m 383.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.13672" y="235.2213"><tspan x="370.13672" y="235.2213">F6</tspan></text></g>
+      <g id="f6s7" class="s7"><path d="m 383.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="370.13672" y="275.2213"><tspan x="370.13672" y="275.2213">F7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret7">
+      <g id="f7s1" class="s1"><path d="m 443.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.52734" y="35.221306"><tspan x="430.52734" y="35.221306">G1</tspan></text></g>
+      <g id="f7s2" class="s2"><path d="m 443.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.48047" y="75.221306"><tspan x="430.48047" y="75.221306">G2</tspan></text></g>
+      <g id="f7s3" class="s3"><path d="m 443.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.50391" y="115.22131"><tspan x="430.50391" y="115.22131">G3</tspan></text></g>
+      <g id="f7s4" class="s4"><path d="m 443.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.32422" y="155.2213"><tspan x="430.32422" y="155.2213">G4</tspan></text></g>
+      <g id="f7s5" class="s5"><path d="m 443.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.52734" y="195.2213"><tspan x="430.52734" y="195.2213">G5</tspan></text></g>
+      <g id="f7s6" class="s6"><path d="m 443.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.40234" y="235.2213"><tspan x="430.40234" y="235.2213">G6</tspan></text></g>
+      <g id="f7s7" class="s7"><path d="m 443.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="430.40234" y="275.2213"><tspan x="430.40234" y="275.2213">G7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret8">
+      <g id="f8s1" class="s1"><path d="m 503.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.26172" y="35.221306"><tspan x="490.26172" y="35.221306">H1</tspan></text></g>
+      <g id="f8s2" class="s2"><path d="m 503.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.21484" y="75.221306"><tspan x="490.21484" y="75.221306">H2</tspan></text></g>
+      <g id="f8s3" class="s3"><path d="m 503.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.23828" y="115.22131"><tspan x="490.23828" y="115.22131">H3</tspan></text></g>
+      <g id="f8s4" class="s4"><path d="m 503.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.05859" y="155.2213"><tspan x="490.05859" y="155.2213">H4</tspan></text></g>
+      <g id="f8s5" class="s5"><path d="m 503.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.26172" y="195.2213"><tspan x="490.26172" y="195.2213">H5</tspan></text></g>
+      <g id="f8s6" class="s6"><path d="m 503.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.13672" y="235.2213"><tspan x="490.13672" y="235.2213">H6</tspan></text></g>
+      <g id="f8s7" class="s7"><path d="m 503.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="490.13672" y="275.2213"><tspan x="490.13672" y="275.2213">H7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret9">
+      <g id="f9s1" class="s1"><path d="m 563.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.26172" y="35.221306"><tspan x="550.26172" y="35.221306">I1</tspan></text></g>
+      <g id="f9s2" class="s2"><path d="m 563.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.21484" y="75.221306"><tspan x="550.21484" y="75.221306">I2</tspan></text></g>
+      <g id="f9s3" class="s3"><path d="m 563.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.23828" y="115.22131"><tspan x="550.23828" y="115.22131">I3</tspan></text></g>
+      <g id="f9s4" class="s4"><path d="m 563.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.05859" y="155.2213"><tspan x="550.05859" y="155.2213">I4</tspan></text></g>
+      <g id="f9s5" class="s5"><path d="m 563.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.26172" y="195.2213"><tspan x="550.26172" y="195.2213">I5</tspan></text></g>
+      <g id="f9s6" class="s6"><path d="m 563.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.13672" y="235.2213"><tspan x="550.13672" y="235.2213">I6</tspan></text></g>
+      <g id="f9s7" class="s7"><path d="m 563.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="550.13672" y="275.2213"><tspan x="550.13672" y="275.2213">I7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret10">
+      <g id="f10s1" class="s1"><path d="m 623.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.80078" y="35.221306"><tspan x="610.80078" y="35.221306">J1</tspan></text></g>
+      <g id="f10s2" class="s2"><path d="m 623.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.75391" y="75.221306"><tspan x="610.75391" y="75.221306">J2</tspan></text></g>
+      <g id="f10s3" class="s3"><path d="m 623.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.77734" y="115.22131"><tspan x="610.77734" y="115.22131">J3</tspan></text></g>
+      <g id="f10s4" class="s4"><path d="m 623.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.59766" y="155.2213"><tspan x="610.59766" y="155.2213">J4</tspan></text></g>
+      <g id="f10s5" class="s5"><path d="m 623.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.80078" y="195.2213"><tspan x="610.80078" y="195.2213">J5</tspan></text></g>
+      <g id="f10s6" class="s6"><path d="m 623.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.67578" y="235.2213"><tspan x="610.67578" y="235.2213">J6</tspan></text></g>
+      <g id="f10s7" class="s7"><path d="m 623.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="610.67578" y="275.2213"><tspan x="610.67578" y="275.2213">J7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret11">
+      <g id="f11s1" class="s1"><path d="m 683.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.26172" y="35.221306"><tspan x="670.26172" y="35.221306">K1</tspan></text></g>
+      <g id="f11s2" class="s2"><path d="m 683.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.21484" y="75.221306"><tspan x="670.21484" y="75.221306">K2</tspan></text></g>
+      <g id="f11s3" class="s3"><path d="m 683.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.23828" y="115.22131"><tspan x="670.23828" y="115.22131">K3</tspan></text></g>
+      <g id="f11s4" class="s4"><path d="m 683.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.05859" y="155.2213"><tspan x="670.05859" y="155.2213">K4</tspan></text></g>
+      <g id="f11s5" class="s5"><path d="m 683.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.26172" y="195.2213"><tspan x="670.26172" y="195.2213">K5</tspan></text></g>
+      <g id="f11s6" class="s6"><path d="m 683.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.13672" y="235.2213"><tspan x="670.13672" y="235.2213">K6</tspan></text></g>
+      <g id="f11s7" class="s7"><path d="m 683.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="670.13672" y="275.2213"><tspan x="670.13672" y="275.2213">K7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret12">
+      <g id="f12s1" class="s1"><path d="m 743.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.26172" y="35.221306"><tspan x="730.26172" y="35.221306">L1</tspan></text></g>
+      <g id="f12s2" class="s2"><path d="m 743.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.21484" y="75.221306"><tspan x="730.21484" y="75.221306">L2</tspan></text></g>
+      <g id="f12s3" class="s3"><path d="m 743.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.23828" y="115.22131"><tspan x="730.23828" y="115.22131">L3</tspan></text></g>
+      <g id="f12s4" class="s4"><path d="m 743.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.05859" y="155.2213"><tspan x="730.05859" y="155.2213">L4</tspan></text></g>
+      <g id="f12s5" class="s5"><path d="m 743.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.26172" y="195.2213"><tspan x="730.26172" y="195.2213">L5</tspan></text></g>
+      <g id="f12s6" class="s6"><path d="m 743.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.13672" y="235.2213"><tspan x="730.13672" y="235.2213">L6</tspan></text></g>
+      <g id="f12s7" class="s7"><path d="m 743.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="730.13672" y="275.2213"><tspan x="730.13672" y="275.2213">L7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret13">
+      <g id="f13s1" class="s1"><path d="m 803.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.26172" y="35.221306"><tspan x="790.26172" y="35.221306">M1</tspan></text></g>
+      <g id="f13s2" class="s2"><path d="m 803.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.21484" y="75.221306"><tspan x="790.21484" y="75.221306">M2</tspan></text></g>
+      <g id="f13s3" class="s3"><path d="m 803.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.23828" y="115.22131"><tspan x="790.23828" y="115.22131">M3</tspan></text></g>
+      <g id="f13s4" class="s4"><path d="m 803.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.05859" y="155.2213"><tspan x="790.05859" y="155.2213">M4</tspan></text></g>
+      <g id="f13s5" class="s5"><path d="m 803.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.26172" y="195.2213"><tspan x="790.26172" y="195.2213">M5</tspan></text></g>
+      <g id="f13s6" class="s6"><path d="m 803.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.13672" y="235.2213"><tspan x="790.13672" y="235.2213">M6</tspan></text></g>
+      <g id="f13s7" class="s7"><path d="m 803.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="790.13672" y="275.2213"><tspan x="790.13672" y="275.2213">M7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret14">
+      <g id="f14s1" class="s1"><path d="m 863.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.26172" y="35.221306"><tspan x="850.26172" y="35.221306">N1</tspan></text></g>
+      <g id="f14s2" class="s2"><path d="m 863.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.21484" y="75.221306"><tspan x="850.21484" y="75.221306">N2</tspan></text></g>
+      <g id="f14s3" class="s3"><path d="m 863.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.23828" y="115.22131"><tspan x="850.23828" y="115.22131">N3</tspan></text></g>
+      <g id="f14s4" class="s4"><path d="m 863.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.05859" y="155.2213"><tspan x="850.05859" y="155.2213">N4</tspan></text></g>
+      <g id="f14s5" class="s5"><path d="m 863.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.26172" y="195.2213"><tspan x="850.26172" y="195.2213">N5</tspan></text></g>
+      <g id="f14s6" class="s6"><path d="m 863.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.13672" y="235.2213"><tspan x="850.13672" y="235.2213">N6</tspan></text></g>
+      <g id="f14s7" class="s7"><path d="m 863.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="850.13672" y="275.2213"><tspan x="850.13672" y="275.2213">N7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret15">
+      <g id="f15s1" class="s1"><path d="m 923.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.5" y="35.221306"><tspan x="910.5" y="35.221306">O1</tspan></text></g>
+      <g id="f15s2" class="s2"><path d="m 923.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.45312" y="75.221306"><tspan x="910.45312" y="75.221306">O2</tspan></text></g>
+      <g id="f15s3" class="s3"><path d="m 923.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.47656" y="115.22131"><tspan x="910.47656" y="115.22131">O3</tspan></text></g>
+      <g id="f15s4" class="s4"><path d="m 923.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.29688" y="155.2213"><tspan x="910.29688" y="155.2213">O4</tspan></text></g>
+      <g id="f15s5" class="s5"><path d="m 923.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.5" y="195.2213"><tspan x="910.5" y="195.2213">O5</tspan></text></g>
+      <g id="f15s6" class="s6"><path d="m 923.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.375" y="235.2213"><tspan x="910.375" y="235.2213">O6</tspan></text></g>
+      <g id="f15s7" class="s7"><path d="m 923.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="910.375" y="275.2213"><tspan x="910.375" y="275.2213">O7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret16">
+      <g id="f16s1" class="s1"><path d="m 983.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.26172" y="35.221306"><tspan x="970.26172" y="35.221306">P1</tspan></text></g>
+      <g id="f16s2" class="s2"><path d="m 983.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.21484" y="75.221306"><tspan x="970.21484" y="75.221306">P2</tspan></text></g>
+      <g id="f16s3" class="s3"><path d="m 983.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.23828" y="115.22131"><tspan x="970.23828" y="115.22131">P3</tspan></text></g>
+      <g id="f16s4" class="s4"><path d="m 983.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.05859" y="155.2213"><tspan x="970.05859" y="155.2213">P4</tspan></text></g>
+      <g id="f16s5" class="s5"><path d="m 983.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.26172" y="195.2213"><tspan x="970.26172" y="195.2213">P5</tspan></text></g>
+      <g id="f16s6" class="s6"><path d="m 983.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.13672" y="235.2213"><tspan x="970.13672" y="235.2213">P6</tspan></text></g>
+      <g id="f16s7" class="s7"><path d="m 983.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="970.13672" y="275.2213"><tspan x="970.13672" y="275.2213">P7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret17">
+      <g id="f17s1" class="s1"><path d="m 1043.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.5" y="35.221306"><tspan x="1030.5" y="35.221306">Q1</tspan></text></g>
+      <g id="f17s2" class="s2"><path d="m 1043.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.4531" y="75.221306"><tspan x="1030.4531" y="75.221306">Q2</tspan></text></g>
+      <g id="f17s3" class="s3"><path d="m 1043.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.4766" y="115.22131"><tspan x="1030.4766" y="115.22131">Q3</tspan></text></g>
+      <g id="f17s4" class="s4"><path d="m 1043.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.2969" y="155.2213"><tspan x="1030.2969" y="155.2213">Q4</tspan></text></g>
+      <g id="f17s5" class="s5"><path d="m 1043.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.5" y="195.2213"><tspan x="1030.5" y="195.2213">Q5</tspan></text></g>
+      <g id="f17s6" class="s6"><path d="m 1043.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.375" y="235.2213"><tspan x="1030.375" y="235.2213">Q6</tspan></text></g>
+      <g id="f17s7" class="s7"><path d="m 1043.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1030.375" y="275.2213"><tspan x="1030.375" y="275.2213">Q7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret18">
+      <g id="f18s1" class="s1"><path d="m 1103.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.2617" y="35.221306"><tspan x="1090.2617" y="35.221306">R1</tspan></text></g>
+      <g id="f18s2" class="s2"><path d="m 1103.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.2148" y="75.221306"><tspan x="1090.2148" y="75.221306">R2</tspan></text></g>
+      <g id="f18s3" class="s3"><path d="m 1103.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.2383" y="115.22131"><tspan x="1090.2383" y="115.22131">R3</tspan></text></g>
+      <g id="f18s4" class="s4"><path d="m 1103.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.0586" y="155.2213"><tspan x="1090.0586" y="155.2213">R4</tspan></text></g>
+      <g id="f18s5" class="s5"><path d="m 1103.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.2617" y="195.2213"><tspan x="1090.2617" y="195.2213">R5</tspan></text></g>
+      <g id="f18s6" class="s6"><path d="m 1103.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.1367" y="235.2213"><tspan x="1090.1367" y="235.2213">R6</tspan></text></g>
+      <g id="f18s7" class="s7"><path d="m 1103.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1090.1367" y="275.2213"><tspan x="1090.1367" y="275.2213">R7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret19">
+      <g id="f19s1" class="s1"><path d="m 1163.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.5664" y="35.221306"><tspan x="1150.5664" y="35.221306">S1</tspan></text></g>
+      <g id="f19s2" class="s2"><path d="m 1163.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.5195" y="75.221306"><tspan x="1150.5195" y="75.221306">S2</tspan></text></g>
+      <g id="f19s3" class="s3"><path d="m 1163.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.543" y="115.22131"><tspan x="1150.543" y="115.22131">S3</tspan></text></g>
+      <g id="f19s4" class="s4"><path d="m 1163.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.3633" y="155.2213"><tspan x="1150.3633" y="155.2213">S4</tspan></text></g>
+      <g id="f19s5" class="s5"><path d="m 1163.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.5664" y="195.2213"><tspan x="1150.5664" y="195.2213">S5</tspan></text></g>
+      <g id="f19s6" class="s6"><path d="m 1163.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.4414" y="235.2213"><tspan x="1150.4414" y="235.2213">S6</tspan></text></g>
+      <g id="f19s7" class="s7"><path d="m 1163.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1150.4414" y="275.2213"><tspan x="1150.4414" y="275.2213">S7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret20">
+      <g id="f20s1" class="s1"><path d="m 1223.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.7656" y="35.221306"><tspan x="1210.7656" y="35.221306">T1</tspan></text></g>
+      <g id="f20s2" class="s2"><path d="m 1223.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.7188" y="75.221306"><tspan x="1210.7188" y="75.221306">T2</tspan></text></g>
+      <g id="f20s3" class="s3"><path d="m 1223.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.7422" y="115.22131"><tspan x="1210.7422" y="115.22131">T3</tspan></text></g>
+      <g id="f20s4" class="s4"><path d="m 1223.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.5625" y="155.2213"><tspan x="1210.5625" y="155.2213">T4</tspan></text></g>
+      <g id="f20s5" class="s5"><path d="m 1223.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.7656" y="195.2213"><tspan x="1210.7656" y="195.2213">T5</tspan></text></g>
+      <g id="f20s6" class="s6"><path d="m 1223.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.6406" y="235.2213"><tspan x="1210.6406" y="235.2213">T6</tspan></text></g>
+      <g id="f20s7" class="s7"><path d="m 1223.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1210.6406" y="275.2213"><tspan x="1210.6406" y="275.2213">T7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret21">
+      <g id="f21s1" class="s1"><path d="m 1283.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.2656" y="35.221306"><tspan x="1270.2656" y="35.221306">U1</tspan></text></g>
+      <g id="f21s2" class="s2"><path d="m 1283.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.2188" y="75.221306"><tspan x="1270.2188" y="75.221306">U2</tspan></text></g>
+      <g id="f21s3" class="s3"><path d="m 1283.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.2422" y="115.22131"><tspan x="1270.2422" y="115.22131">U3</tspan></text></g>
+      <g id="f21s4" class="s4"><path d="m 1283.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.0625" y="155.2213"><tspan x="1270.0625" y="155.2213">U4</tspan></text></g>
+      <g id="f21s5" class="s5"><path d="m 1283.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.2656" y="195.2213"><tspan x="1270.2656" y="195.2213">U5</tspan></text></g>
+      <g id="f21s6" class="s6"><path d="m 1283.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.1406" y="235.2213"><tspan x="1270.1406" y="235.2213">U6</tspan></text></g>
+      <g id="f21s7" class="s7"><path d="m 1283.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1270.1406" y="275.2213"><tspan x="1270.1406" y="275.2213">U7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret22">
+      <g id="f22s1" class="s1"><path d="m 1343.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.7266" y="35.221306"><tspan x="1330.7266" y="35.221306">V1</tspan></text></g>
+      <g id="f22s2" class="s2"><path d="m 1343.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.6797" y="75.221306"><tspan x="1330.6797" y="75.221306">V2</tspan></text></g>
+      <g id="f22s3" class="s3"><path d="m 1343.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.7031" y="115.22131"><tspan x="1330.7031" y="115.22131">V3</tspan></text></g>
+      <g id="f22s4" class="s4"><path d="m 1343.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.5234" y="155.2213"><tspan x="1330.5234" y="155.2213">V4</tspan></text></g>
+      <g id="f22s5" class="s5"><path d="m 1343.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.7266" y="195.2213"><tspan x="1330.7266" y="195.2213">V5</tspan></text></g>
+      <g id="f22s6" class="s6"><path d="m 1343.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.6016" y="235.2213"><tspan x="1330.6016" y="235.2213">V6</tspan></text></g>
+      <g id="f22s7" class="s7"><path d="m 1343.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1330.6016" y="275.2213"><tspan x="1330.6016" y="275.2213">V7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret23">
+      <g id="f23s1" class="s1"><path d="m 1403.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.7266" y="35.221306"><tspan x="1390.7266" y="35.221306">W1</tspan></text></g>
+      <g id="f23s2" class="s2"><path d="m 1403.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.6797" y="75.221306"><tspan x="1390.6797" y="75.221306">W2</tspan></text></g>
+      <g id="f23s3" class="s3"><path d="m 1403.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.7031" y="115.22131"><tspan x="1390.7031" y="115.22131">W3</tspan></text></g>
+      <g id="f23s4" class="s4"><path d="m 1403.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.5234" y="155.2213"><tspan x="1390.5234" y="155.2213">W4</tspan></text></g>
+      <g id="f23s5" class="s5"><path d="m 1403.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.7266" y="195.2213"><tspan x="1390.7266" y="195.2213">W5</tspan></text></g>
+      <g id="f23s6" class="s6"><path d="m 1403.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.6016" y="235.2213"><tspan x="1390.6016" y="235.2213">W6</tspan></text></g>
+      <g id="f23s7" class="s7"><path d="m 1403.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1390.6016" y="275.2213"><tspan x="1390.6016" y="275.2213">W7</tspan></text></g>
+    </g>
+    <g class="fret" id="fret24">
+      <g id="f24s1" class="s1"><path d="m 1463.9375,30 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.7266" y="35.221306"><tspan x="1450.7266" y="35.221306">X1</tspan></text></g>
+      <g id="f24s2" class="s2"><path d="m 1463.9375,70 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.6797" y="75.221306"><tspan x="1450.6797" y="75.221306">X2</tspan></text></g>
+      <g id="f24s3" class="s3"><path d="m 1463.9375,110 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.7031" y="115.22131"><tspan x="1450.7031" y="115.22131">X3</tspan></text></g>
+      <g id="f24s4" class="s4"><path d="m 1463.9375,150 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.5234" y="155.2213"><tspan x="1450.5234" y="155.2213">X4</tspan></text></g>
+      <g id="f24s5" class="s5"><path d="m 1463.9375,190 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.7266" y="195.2213"><tspan x="1450.7266" y="195.2213">X5</tspan></text></g>
+      <g id="f24s6" class="s6"><path d="m 1463.9375,230 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.6016" y="235.2213"><tspan x="1450.6016" y="235.2213">X6</tspan></text></g>
+      <g id="f24s7" class="s7"><path d="m 1463.9375,270 a 13.5,13.5 0 0 1 -27,0 13.5,13.5 0 1 1 27,0 z"></path><text x="1450.6016" y="275.2213"><tspan x="1450.6016" y="275.2213">X7</tspan></text></g>
+    </g>
+  </g>
+  <g id="r7c"><rect id="r7boxc" visibility="hidden" width="1490" height="32" x="0" y="253"></rect></g>
+  <g class="xstring">
+    <g id="x1" transform="matrix(0.78230211,0,0,0.78230211,16.601735,-142.10646)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x2" transform="matrix(0.78230211,0,0,0.78230211,16.601735,-102.10646)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x3" transform="matrix(0.78230211,0,0,0.78230211,16.601735,-62.106464)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x4" transform="matrix(0.78230211,0,0,0.78230211,16.601735,-22.106464)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x5" transform="matrix(0.78230211,0,0,0.78230211,16.601735,17.893536)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x6" transform="matrix(0.78230211,0,0,0.78230211,16.601735,57.893536)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+    <g id="x7" transform="matrix(0.78230211,0,0,0.78230211,16.601735,97.893536)"><path d="m -10,210 20,20"></path><path d="M -10,230 10,210"></path></g>
+  </g>
+  <g class="fret" id="fret0">
+    <g id="f0s6" class="s6" transform="translate(0.4854663,-1)"><path d="m 26.101735,231 a 12.5,12.5 0 0 1 -25,0 12.5,12.5 0 1 1 25,0 z"></path>
+      <text y="236.05469" x="13.609548"><tspan y="236.05469" x="13.609548">6</tspan></text>
+    </g>
+  </g>
+  <text id="text3710" x="1398" y="300" xml:space="preserve"><tspan x="1398" y="300" id="copyright">©2015-2023 Neocortext</tspan></text>
+</svg>
+</div>
+<table id="tfoot">
+  <tr>
+    <td align="left">
+      <label id="seventhLabel" for="seventhCheck"><input id="seventhCheck" type="checkbox" />Show Seventh String</label>
+    </td>
+    <td>
+      <div id="info">
+        <table>
+          <tr id="scale">
+            <td id="s0"></td><td id="s1"></td><td id="s2"></td><td id="s3"></td>
+            <td id="s4"></td><td id="s5"></td><td id="s6"></td><td id="s7"></td>
+          </tr>
+          <tr id="interval">
+            <td id="i0"></td><td id="i1"></td><td id="i2"></td><td id="i3"></td>
+            <td id="i4"></td><td id="i5"></td><td id="i6"></td><td id="i7"></td>
+          </tr>
+        </table>
+      </div>
+    </td>
+    <td align="right">
+      <p style="text-align:right"><img title="If it doesn't work try Firefox!" src="image/firefox-105x20.png"
+         alt="best with firefox" width="105" height="20"></p>
+    </td>
+  </tr>
+</table>
+<p id="footer_copyright">©2015-2023 <a target="_blank" href="http://altheim.com/murray/">Murray Altheim</a>. All Rights Reserved.</p>
+<script>
+  $(document).ready(function() {
+    $("#f0s7").css("visibility","hidden");
+    $("#r7box").css("visibility","visible");
+    $("#r7boxc").css("visibility","visible");
+    $('#seventhCheck').click(function() {
+      var checked = !$('#seventhCheck').is(':checked');
+      var visible = checked ? "hidden" : "visible";
+      var invisible = checked ? "visible" : "hidden";
+      for ( var i = 1; i < 25; i++ ) {
+         var id = "#f" + i + "s7";
+         $(id).css("visibility",visible);
+      }
+      $("#f0s7").css("visibility",visible);
+      $("#r7box").css("visibility",invisible);
+      $("#r7boxc").css("visibility",invisible);
+    });
+    $("#setchord").click();
+  });
+</script>
+</div>
+</body>
+</html>
