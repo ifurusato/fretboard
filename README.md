@@ -2,6 +2,9 @@
 
 Utilities for Guitarists
 
+* [Fretboard](https://altheim.com/murray/fretboard/), the online version of Fretboard
+* [Fretboard (repo)](https://github.com/ifurusato/fretboard/tree/main/fretboard/), repository version of same
+
 
 ## Status
 
