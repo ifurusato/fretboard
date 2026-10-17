@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Fretboard & Mode Explorer</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="tailwind-static.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            zoom: 125%;
+        }
+        #fretboard-container {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden; 
+        }
+        svg.fretboard-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+        }
+        #footer {
+            margin-left: 0.5em;
+            font-size: 80%;
+            color: #8b95ba;
+        }
+        #matches-section {
+            zoom: 80%;
+        }
+        #reset-button {
+            font-size: 60%;
+        }
+
+        .fret-line { stroke: #475569; stroke-width: 2; }
+        .string-line { stroke: #94a3b8; stroke-width: 2; }
+        .nut-line { stroke: #cbd5e1; stroke-width: 6; }
+        .fret-marker { fill: #e2e8f0; opacity: 0.45; }
+        
+        .note-circle {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            fill: transparent;
+            stroke: #475569;
+            stroke-width: 2;
+        }
+        
+        .note-text {
+            pointer-events: none;
+            user-select: none;
+            font-size: 11px;
+            font-weight: 700;
+            fill: transparent;
+            transition: fill 0.2s ease;
+        }
+
+        .note-group:hover .note-circle {
+            stroke: #94a3b8;
+            fill: rgba(148, 163, 184, 0.2);
+        }
+        .note-group:hover .note-text {
+            fill: #94a3b8;
+        }
+
+        .note-group.selected .note-circle {
+            fill: #3b82f6; 
+            stroke: #60a5fa; 
+        }
+        .note-group.selected .note-text {
+            fill: #ffffff;
+        }
+
+        .note-group.root .note-circle {
+            fill: #ef4444; 
+            stroke: #f87171; 
+        }
+        .note-group.root .note-text {
+            fill: #ffffff;
+        }
+
+        .note-group.scale-member .note-circle {
+            fill: #10b981; 
+            stroke: #34d399; 
+        }
+        .note-group.scale-member .note-text {
+            fill: #ffffff;
+        }
+
+        .match-badge { transition: all 0.2s ease; }
+        .match-badge:hover { transform: translateY(-2px); }
+        .match-badge.active-spelling {
+            background-color: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+        .match-badge.family {
+            background-color: rgba(139, 92, 246, 0.18);
+            color: #c4b5fd;
+            border-color: #8b5cf6;
+        }
+        .match-badge.sibling {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fcd34d;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 1px #f59e0b;
+        }
+        .match-badge.faded { opacity: 0.35; }
+        .match-badge.faded:hover { opacity: 0.7; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <div class="max-w-7xl w-full space-y-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                    Guitar Fretboard & Mode Explorer
+                </h1>
+                <p class="text-slate-400 text-sm mt-2">
+                    Click any fret to select. <span class="text-red-400 font-semibold">Shift-Click</span> to assign the Root Note.
+                </p>
+            </div>
+            <button id="reset-button" onclick="resetApp()" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg font-medium transition-colors text-slate-200 shadow-sm flex items-center gap-2">Reset</button>
+        </div>
+
+        <div class="bg-slate-800 p-4 rounded-2xl shadow-2xl border border-slate-700 w-full relative">
+            <div id="active-spelling-banner" class="absolute top-4 left-0 w-full text-emerald-400 font-medium text-center transition-opacity duration-300 opacity-0 z-10 drop-shadow-md">
+                Active Selection: <span id="active-spelling-name" class="font-bold"></span>
+            </div>
+            
+            <div id="fretboard-container" class="w-full pt-10 pb-4 cursor-crosshair">
+                <!-- SVG dynamically injected here -->
+            </div>
+        </div>
+
+        <div id="matches-section" class="bg-slate-800 rounded-2xl p-6 md:p-8 shadow-xl border border-slate-700 hidden">
+            <h2 class="text-xl font-bold mb-6 border-b border-slate-700 pb-2">Matching Scales and Modes</h2>
+            <div id="sibling-note" class="hidden mb-6 text-sm text-amber-300 bg-amber-500/10 border border-amber-500/40 rounded-lg px-4 py-2"></div>
+            <div id="matches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Matches injected here -->
+            </div>
+        </div>
+        <div id="footer">
+          Copyright &copy;2026 Murray Altheim. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        var SCALES = {
+            "Ionian": { intervals: [0, 2, 4, 5, 7, 9, 11] },
+            "Dorian": { intervals: [0, 2, 3, 5, 7, 9, 10] },
+            "Phrygian": { intervals: [0, 1, 3, 5, 7, 8, 10] },
+            "Lydian": { intervals: [0, 2, 4, 6, 7, 9, 11] },
+            "Mixolydian": { intervals: [0, 2, 4, 5, 7, 9, 10] },
+            "Aeolian": { intervals: [0, 2, 3, 5, 7, 8, 10] },
+            "Locrian": { intervals: [0, 1, 3, 5, 6, 8, 10] },
+            "Pentatonic Major": { intervals: [0, 2, 4, 7, 9] },
+            "Pentatonic Minor": { intervals: [0, 3, 5, 7, 10] },
+            "Harmonic Major": { intervals: [0, 2, 4, 5, 7, 8, 11] },
+            "Harmonic Minor": { intervals: [0, 2, 3, 5, 7, 8, 11] }
+        };
+
+        var STANDARD_ROOTS = {
+            0:  { name: 'C', letterIndex: 0, bias: 'b', label: 'C' },
+            1:  { name: 'D♭', letterIndex: 1, bias: 'b', label: 'C♯/D♭' },
+            2:  { name: 'D', letterIndex: 1, bias: '#', label: 'D' },
+            3:  { name: 'E♭', letterIndex: 2, bias: 'b', label: 'D♯/E♭' },
+            4:  { name: 'E', letterIndex: 2, bias: '#', label: 'E' },
+            5:  { name: 'F', letterIndex: 3, bias: 'b', label: 'F' },
+            6:  { name: 'F♯', letterIndex: 3, bias: '#', label: 'F♯/G♭' },
+            7:  { name: 'G', letterIndex: 4, bias: '#', label: 'G' },
+            8:  { name: 'A♭', letterIndex: 5, bias: 'b', label: 'G♯/A♭' },
+            9:  { name: 'A', letterIndex: 5, bias: '#', label: 'A' },
+            10: { name: 'B♭', letterIndex: 6, bias: 'b', label: 'A♯/B♭' },
+            11: { name: 'B', letterIndex: 6, bias: '#', label: 'B' }
+        };
+
+        var STRINGS_PITCHES = [4, 11, 7, 2, 9, 4]; // E A D G B E
+
+        var selectedPositions = new Set();
+        var rootPosition = null;
+        var activeMatchId = null;
+        var activeRelativeSet = null; // Stores pitch set when a mode is clicked without explicit root
+
+        function renderFretboard() {
+            var container = document.getElementById('fretboard-container');
+            var totalFrets = 24;
+            
+            var svgWidth = 1400;
+            var svgHeight = 220;
+            var openStringX = 30;
+            var nutX = 80;
+            var fretSpacing = (svgWidth - nutX - 20) / totalFrets;
+            var stringSpacing = 30;
+            var topStringY = 30;
+
+            var svgHTML = '<svg width="' + svgWidth + '" height="' + svgHeight + '" viewBox="0 0 ' + svgWidth + ' ' + svgHeight + '" xmlns="http://www.w3.org/2000/svg" class="fretboard-svg select-none mx-auto block">';
+
+            var markers = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
+            markers.forEach(function(fret) {
+                var cx = nutX + (fret * fretSpacing) - (fretSpacing / 2);
+                if (fret === 12 || fret === 24) {
+                    svgHTML += '<circle cx="' + cx + '" cy="' + (topStringY + stringSpacing * 1.5) + '" r="8" class="fret-marker" />';
+                    svgHTML += '<circle cx="' + cx + '" cy="' + (topStringY + stringSpacing * 3.5) + '" r="8" class="fret-marker" />';
+                } else {
+                    svgHTML += '<circle cx="' + cx + '" cy="' + (topStringY + stringSpacing * 2.5) + '" r="8" class="fret-marker" />';
+                }
+            });
+
+            for (var s = 0; s < 6; s++) {
+                var y = topStringY + (s * stringSpacing);
+                var thickness = 1 + (s * 0.4); 
+                svgHTML += '<line x1="' + openStringX + '" y1="' + y + '" x2="' + (svgWidth - 20) + '" y2="' + y + '" class="string-line" style="stroke-width: ' + thickness + ';" />';
+            }
+
+            svgHTML += '<line x1="' + nutX + '" y1="' + topStringY + '" x2="' + nutX + '" y2="' + (topStringY + (5 * stringSpacing)) + '" class="nut-line" />';
+
+            for (var f = 1; f <= totalFrets; f++) {
+                var x = nutX + (f * fretSpacing);
+                svgHTML += '<line x1="' + x + '" y1="' + topStringY + '" x2="' + x + '" y2="' + (topStringY + (5 * stringSpacing)) + '" class="fret-line" />';
+                svgHTML += '<text x="' + (x - fretSpacing/2) + '" y="' + (svgHeight - 10) + '" text-anchor="middle" class="fill-slate-500 text-[10px] font-bold">' + f + '</text>';
+            }
+            svgHTML += '<text x="' + openStringX + '" y="' + (svgHeight - 10) + '" text-anchor="middle" class="fill-slate-500 text-[10px] font-bold">Open</text>';
+
+            for (var s2 = 0; s2 < 6; s2++) {
+                var y2 = topStringY + (s2 * stringSpacing);
+                var stringBasePitch = STRINGS_PITCHES[s2];
+
+                for (var f2 = 0; f2 <= totalFrets; f2++) {
+                    var x2 = f2 === 0 ? openStringX : nutX + (f2 * fretSpacing) - (fretSpacing / 2);
+                    var pitch = (stringBasePitch + f2) % 12;
+                    var posId = s2 + '-' + f2;
+
+                    svgHTML += '<g id="group-' + posId + '" class="note-group" onclick="handleNoteClick(event, ' + s2 + ', ' + f2 + ', ' + pitch + ')">' +
+                               '<circle id="circle-' + posId + '" cx="' + x2 + '" cy="' + y2 + '" r="12" class="note-circle" />' +
+                               '<text id="label-' + posId + '" x="' + x2 + '" y="' + (y2 + 4) + '" text-anchor="middle" class="note-text">' +
+                               STANDARD_ROOTS[pitch].label +
+                               '</text>' +
+                               '</g>';
+                }
+            }
+
+            svgHTML += '</svg>';
+            container.innerHTML = svgHTML;
+            updateFretboardVisuals();
+        }
+
+        function handleNoteClick(event, stringIdx, fretIdx, pitch) {
+            var isShift = event.shiftKey;
+            var posId = stringIdx + '-' + fretIdx;
+
+            // Clear relative mode selection upon manual note click
+            activeRelativeSet = null;
+
+            if (isShift) {
+                if (rootPosition === posId) {
+                    rootPosition = null;
+                    selectedPositions.delete(posId);
+                } else {
+                    rootPosition = posId;
+                    selectedPositions.add(posId);
+                }
+            } else {
+                if (selectedPositions.has(posId)) {
+                    selectedPositions.delete(posId);
+                    if (rootPosition === posId) rootPosition = null;
+                } else {
+                    selectedPositions.add(posId);
+                }
+            }
+
+            activeMatchId = null;
+            document.getElementById('active-spelling-banner').classList.replace('opacity-100', 'opacity-0');
+            resetLabels();
+            
+            updateFretboardVisuals();
+            calculateAndRenderMatches();
+        }
+
+        function resetApp() {
+            selectedPositions.clear();
+            rootPosition = null;
+            activeMatchId = null;
+            activeRelativeSet = null;
+            document.getElementById('active-spelling-banner').classList.replace('opacity-100', 'opacity-0');
+            resetLabels();
+            updateFretboardVisuals();
+            calculateAndRenderMatches();
+        }
+
+        function updateFretboardVisuals() {
+            var scalePitches = null;
+            var activeRootPitch = null;
+            
+            if (activeMatchId) {
+                var parts = activeMatchId.split('-');
+                activeRootPitch = parseInt(parts[0]);
+                var scaleName = parts[1];
+                var scaleData = SCALES[scaleName];
+                scalePitches = new Set(scaleData.intervals.map(function(iv) {
+                    return (activeRootPitch + iv) % 12;
+                }));
+            } else if (activeRelativeSet) {
+                scalePitches = activeRelativeSet;
+            }
+
+            for (var s = 0; s < 6; s++) {
+                var stringBasePitch = STRINGS_PITCHES[s];
+                for (var f = 0; f <= 24; f++) {
+                    var posId = s + '-' + f;
+                    var group = document.getElementById('group-' + posId);
+                    if (!group) continue;
+
+                    var pitch = (stringBasePitch + f) % 12;
+
+                    group.classList.remove('selected', 'root', 'scale-member');
+
+                    if (activeRootPitch !== null && pitch === activeRootPitch) {
+                        group.classList.add('root');
+                    } else if (rootPosition === posId) {
+                        group.classList.add('root');
+                    } else if (selectedPositions.has(posId)) {
+                        group.classList.add('selected');
+                    } else if (scalePitches && scalePitches.has(pitch)) {
+                        group.classList.add('scale-member');
+                    }
+                }
+            }
+        }
+
+        function getEnharmonicSpelling(rootPitch, scaleName) {
+            var rootInfo = STANDARD_ROOTS[rootPitch];
+            var labels = new Array(12).fill("");
+            var letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            var natPitches = [0, 2, 4, 5, 7, 9, 11];
+
+            var scaleRef = SCALES[scaleName];
+            var diatonicIntervals = scaleRef.intervals;
+            var numNotes = diatonicIntervals.length;
+
+            for (var i = 0; i < numNotes; i++) {
+                var targetPitch = (rootPitch + diatonicIntervals[i]) % 12;
+                var letterIdx = (rootInfo.letterIndex + i) % 7;
+                var natPitch = natPitches[letterIdx];
+                
+                var diff = targetPitch - natPitch;
+                if (diff < -6) diff += 12;
+                if (diff > 6) diff -= 12;
+
+                var accidental = "";
+                if (diff === 1) accidental = "♯";
+                else if (diff === 2) accidental = "𝄪";
+                else if (diff === -1) accidental = "♭";
+                else if (diff === -2) accidental = "𝄫";
+
+                labels[targetPitch] = letters[letterIdx] + accidental;
+            }
+
+            var defaultFlats = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
+            var defaultSharps = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+            
+            for (var j = 0; j < 12; j++) {
+                if (!labels[j]) {
+                    labels[j] = rootInfo.bias === 'b' ? defaultFlats[j] : defaultSharps[j];
+                }
+            }
+
+            return labels;
+        }
+
+        function resetLabels() {
+            var defaults = ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"];
+            updateAllLabels(defaults);
+        }
+
+        function updateAllLabels(pitchLabelArray) {
+            for (var s = 0; s < 6; s++) {
+                var stringBasePitch = STRINGS_PITCHES[s];
+                for (var f = 0; f <= 24; f++) {
+                    var posId = s + '-' + f;
+                    var pitch = (stringBasePitch + f) % 12;
+                    var textEl = document.getElementById('label-' + posId);
+                    if (textEl) textEl.textContent = pitchLabelArray[pitch];
+                }
+            }
+        }
+
+        function calculateAndRenderMatches() {
+            var matchSection = document.getElementById('matches-section');
+            var grid = document.getElementById('matches-grid');
+            
+            if (selectedPositions.size === 0) {
+                matchSection.classList.add('hidden');
+                return;
+            }
+            
+            matchSection.classList.remove('hidden');
+            var matches = [];
+
+            var uniqueSelectedPitches = new Set();
+            selectedPositions.forEach(function(pos) {
+                var parts = pos.split('-');
+                var s = parseInt(parts[0]);
+                var f = parseInt(parts[1]);
+                var pitch = (STRINGS_PITCHES[s] + f) % 12;
+                uniqueSelectedPitches.add(pitch);
+            });
+            var selectedPitchesArr = Array.from(uniqueSelectedPitches);
+
+            var rootPitchOverride = null;
+            if (rootPosition) {
+                var rootParts = rootPosition.split('-');
+                var rootS = parseInt(rootParts[0]);
+                var rootF = parseInt(rootParts[1]);
+                rootPitchOverride = (STRINGS_PITCHES[rootS] + rootF) % 12;
+            }
+
+            for (var r = 0; r < 12; r++) {
+                if (rootPitchOverride !== null && r !== rootPitchOverride) continue;
+
+                for (var scaleName in SCALES) {
+                    if (SCALES.hasOwnProperty(scaleName)) {
+                        var scaleData = SCALES[scaleName];
+                        var scalePitches = scaleData.intervals.map(function(interval) {
+                            return (r + interval) % 12;
+                        });
+                        
+                        var isMatch = selectedPitchesArr.every(function(pitch) {
+                            return scalePitches.includes(pitch);
+                        });
+                        
+                        if (isMatch) {
+                            matches.push({ rootPitch: r, scaleName: scaleName });
+                        }
+                    }
+                }
+            }
+
+            renderMatches(matches, rootPitchOverride !== null);
+        }
+
+        function pitchSetKey(rootPitch, scaleName) {
+            var seen = {};
+            SCALES[scaleName].intervals.forEach(function(iv) {
+                seen[(rootPitch + iv) % 12] = true;
+            });
+            return Object.keys(seen).map(Number).sort(function(a, b) { return a - b; }).join(',');
+        }
+
+        // Parent = first entry in SCALES (Ionian first) with this pitch set
+        function getParent(key) {
+            var names = Object.keys(SCALES);
+            for (var i = 0; i < names.length; i++) {
+                for (var r = 0; r < 12; r++) {
+                    if (pitchSetKey(r, names[i]) === key) return { root: r, scale: names[i] };
+                }
+            }
+            return null;
+        }
+
+        function updateSiblingNote(activeKey, root, scale, siblingCount, isRootForced) {
+            var el = document.getElementById('sibling-note');
+            if (activeKey === null) { el.classList.add('hidden'); return; }
+
+            var labels = getEnharmonicSpelling(root, scale);
+            var notes = SCALES[scale].intervals.map(function(iv) { return labels[(root + iv) % 12]; }).join(' ');
+            var parent = getParent(activeKey);
+            var parentName = STANDARD_ROOTS[parent.root].name + ' ' + (parent.scale === 'Ionian' ? 'major' : parent.scale);
+            var isParent = (parent.root === root && parent.scale === scale);
+            var n = SCALES[scale].intervals.length;
+
+            var html = '<strong>' + labels[root] + ' ' + scale + '</strong> ' +
+                       (isParent ? 'is the parent of this note set' : 'uses the same notes as <strong>' + parentName + '</strong>') +
+                       ' (' + notes + '). ';
+            if (siblingCount > 0) {
+                html += siblingCount + ' other result' + (siblingCount > 1 ? 's' : '') +
+                        ' (amber) use exactly the same ' + n + ' notes. ';
+            } else if (isRootForced) {
+                html += 'The root is locked, so other key centers are hidden. ';
+            } else {
+                html += 'No other results use exactly the same ' + n + ' notes. ';
+            }
+            html += 'Every result listed still contains your selected notes.';
+
+            el.innerHTML = html;
+            el.classList.remove('hidden');
+        }
+
+        function renderMatches(matches, isRootForced) {
+            var grid = document.getElementById('matches-grid');
+            grid.innerHTML = '';
+
+            var activeKey = null, activeRoot = null, activeScale = null, siblingCount = 0;
+            if (activeMatchId) {
+                var ap = activeMatchId.split('-');
+                activeRoot = parseInt(ap[0]);
+                activeScale = ap[1];
+                activeKey = pitchSetKey(activeRoot, activeScale);
+            }
+
+            if (matches.length === 0) {
+                updateSiblingNote(null);
+                grid.innerHTML = '<p class="col-span-full text-slate-400 italic">No standard scales or modes match these specific notes.</p>';
+                return;
+            }
+
+            var grouped = {};
+            matches.forEach(function(m) {
+                if (!grouped[m.rootPitch]) grouped[m.rootPitch] = [];
+                grouped[m.rootPitch].push(m.scaleName);
+            });
+
+            for (var r = 0; r < 12; r++) {
+                if (!grouped[r]) continue;
+
+                var rootName = STANDARD_ROOTS[r].name;
+                var borderClass = isRootForced ? 'border-red-400/50 bg-slate-700/50' : 'border-slate-700 bg-slate-800/50';
+
+                var groupHTML = '<div class="border ' + borderClass + ' rounded-xl p-4 flex flex-col gap-3 relative">' +
+                                (isRootForced ? '<span class="absolute -top-3 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">Root Forced</span>' : '') +
+                                '<h3 class="text-xl font-bold text-slate-200 border-b border-slate-600/50 pb-2">' + rootName + ' Key Center</h3>' +
+                                '<div class="flex flex-wrap gap-2">';
+
+                grouped[r].forEach(function(scaleName) {
+                    var matchId = r + '-' + scaleName;
+                    var isActive = (activeMatchId === matchId);
+
+                    var isSibling = false;
+                    if (activeKey !== null && !isActive && pitchSetKey(r, scaleName) === activeKey) {
+                        isSibling = true;
+                        siblingCount++;
+                    }
+                    var isFamily = /Pentatonic|Harmonic|Melodic/.test(scaleName);
+
+                    var btnClass;
+                    if (isActive) {
+                        btnClass = 'active-spelling';
+                    } else if (isSibling) {
+                        btnClass = 'sibling cursor-pointer';
+                    } else if (isFamily) {
+                        btnClass = 'family cursor-pointer';
+                    } else {
+                        btnClass = 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600 hover:text-white cursor-pointer';
+                    }
+
+                    groupHTML += '<button onclick="handleMatchClick(' + r + ', \'' + scaleName + '\')" ' +
+                                 'class="match-badge px-3 py-1.5 rounded-lg text-sm font-medium border ' + btnClass + '">' +
+                                 scaleName +
+                                 '</button>';
+                });
+
+                groupHTML += '</div></div>';
+                grid.innerHTML += groupHTML;
+            }
+
+            updateSiblingNote(activeKey, activeRoot, activeScale, siblingCount, isRootForced);
+        }
+
+        function handleMatchClick(rootPitch, scaleName) {
+            var matchId = rootPitch + '-' + scaleName;
+            
+            if (activeMatchId === matchId) {
+                activeMatchId = null;
+                activeRelativeSet = null;
+                resetLabels();
+                document.getElementById('active-spelling-banner').classList.replace('opacity-100', 'opacity-0');
+            } else {
+                activeMatchId = matchId;
+                
+                // If no explicit root is locked via shift-click, calculate all relative modes sharing the same pitch set
+                if (!rootPosition) {
+                    var scaleData = SCALES[scaleName];
+                    var basePitchSet = new Set(scaleData.intervals.map(function(iv) {
+                        return (rootPitch + iv) % 12;
+                    }));
+                    activeRelativeSet = basePitchSet;
+                } else {
+                    activeRelativeSet = null;
+                }
+
+                var labels = getEnharmonicSpelling(rootPitch, scaleName);
+                updateAllLabels(labels);
+                
+                var rootNameStr = labels[rootPitch];
+                var banner = document.getElementById('active-spelling-banner');
+                document.getElementById('active-spelling-name').textContent = rootNameStr + ' ' + scaleName;
+                banner.classList.replace('opacity-0', 'opacity-100');
+            }
+            
+            updateFretboardVisuals();
+            calculateAndRenderMatches(); 
+        }
+
+        window.onload = function() {
+            renderFretboard();
+        };
+
+    </script>
+</body>
+</html>
