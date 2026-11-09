@@ -1,6 +1,6 @@
 /*
  * JavaScript for Barkhausen Fretboard
- * Copyright 2015-2023 Murray Altheim. All Rights Reserved.
+ * Copyright 2015-2026 Murray Altheim. All Rights Reserved.
  */
 
   var defaultColor = '#3a5f94',
