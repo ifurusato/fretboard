@@ -20,11 +20,15 @@
 
   var scaleSet = {
     "C-ionian": "♮", "D♭-ionian": "♭", "D-ionian": "♯", "E♭-ionian": "♭", "E-ionian": "♯", "F-ionian": "♭", "F♯-ionian": "♯", "G-ionian": "♯", "A♭-ionian": "♭", "A-ionian": "♯", "B♭-ionian": "♭", "B-ionian": "♯",
+    "C-ionian-bebop": "♮", "D♭-ionian-bebop": "♭", "D-ionian-bebop": "♯", "E♭-ionian-bebop": "♭", "E-ionian-bebop": "♯", "F-ionian-bebop": "♭", "F♯-ionian-bebop": "♯", "G-ionian-bebop": "♯", "A♭-ionian-bebop": "♭", "A-ionian-bebop": "♯", "B♭-ionian-bebop": "♭", "B-ionian-bebop": "♯",
     "D-dorian": "♮", "E♭-dorian": "♭", "E-dorian": "♯", "F-dorian": "♭", "F♯-dorian": "♯", "G-dorian": "♭", "G♯-dorian": "♯", "A-dorian": "♯", "B♭-dorian": "♭", "B-dorian": "♯", "C-dorian": "♭", "C♯-dorian": "♯",
+    "D-dorian-bebop": "♮", "E♭-dorian-bebop": "♭", "E-dorian-bebop": "♯", "F-dorian-bebop": "♭", "F♯-dorian-bebop": "♯", "G-dorian-bebop": "♭", "G♯-dorian-bebop": "♯", "A-dorian-bebop": "♯", "B♭-dorian-bebop": "♭", "B-dorian-bebop": "♯", "C-dorian-bebop": "♭", "C♯-dorian-bebop": "♯",
     "E-phrygian": "♮", "F-phrygian": "♭", "F♯-phrygian": "♯", "G-phrygian": "♭", "G♯-phrygian": "♯", "A-phrygian": "♭", "A♯-phrygian": "♯", "B-phrygian": "♯", "C-phrygian": "♭", "C♯-phrygian": "♯", "D-phrygian": "♭", "D♯-phrygian": "♯",
     "E-phrygian-dominant": "♮", "F-phrygian-dominant": "♭", "F♯-phrygian-dominant": "♯", "G-phrygian-dominant": "♭", "G♯-phrygian-dominant": "♯", "A-phrygian-dominant": "♭", "A♯-phrygian-dominant": "♯", "B-phrygian-dominant": "♯", "C-phrygian-dominant": "♭", "C♯-phrygian-dominant": "♯", "D-phrygian-dominant": "♭", "D♯-phrygian-dominant": "♯",
     "F-lydian": "♮", "G♭-lydian": "♭", "G-lydian": "♯", "A♭-lydian": "♭", "A-lydian": "♯", "B♭-lydian": "♭", "B-lydian": "♯", "C-lydian": "♯", "D♭-lydian": "♭", "D-lydian": "♯", "E♭-lydian": "♭", "E-lydian": "♯",
     "G-mixolydian": "♮", "A♭-mixolydian": "♭", "A-mixolydian": "♯", "B♭-mixolydian": "♭", "B-mixolydian": "♯", "C-mixolydian": "♭", "C♯-mixolydian": "♯", "D-mixolydian": "♯", "E♭-mixolydian": "♭", "E-mixolydian": "♯", "F-mixolydian": "♭", "F♯-mixolydian": "♯",
+    "G-mixolydian-bebop": "♮", "A♭-mixolydian-bebop": "♭", "A-mixolydian-bebop": "♯", "B♭-mixolydian-bebop": "♭", "B-mixolydian-bebop": "♯", "C-mixolydian-bebop": "♭", "C♯-mixolydian-bebop": "♯", "D-mixolydian-bebop": "♯", "E♭-mixolydian-bebop": "♭", "E-mixolydian-bebop": "♯", "F-mixolydian-bebop": "♭", "F♯-mixolydian-bebop": "♯",
+    "G-mixolydian-b9-b13-bebop": "♮", "A♭-mixolydian-b9-b13-bebop": "♭", "A-mixolydian-b9-b13-bebop": "♯", "B♭-mixolydian-b9-b13-bebop": "♭", "B-mixolydian-b9-b13-bebop": "♯", "C-mixolydian-b9-b13-bebop": "♭", "C♯-mixolydian-b9-b13-bebop": "♯", "D-mixolydian-b9-b13-bebop": "♯", "E♭-mixolydian-b9-b13-bebop": "♭", "E-mixolydian-b9-b13-bebop": "♯", "F-mixolydian-b9-b13-bebop": "♭", "F♯-mixolydian-b9-b13-bebop": "♯",
     "G-mixolydian-6♭": "♮", "A♭-mixolydian-6♭": "♭", "A-mixolydian-6♭": "♯", "B♭-mixolydian-6♭": "♭", "B-mixolydian-6♭": "♯", "C-mixolydian-6♭": "♭", "C♯-mixolydian-6♭": "♯", "D-mixolydian-6♭": "♯", "E♭-mixolydian-6♭": "♭", "E-mixolydian-6♭": "♯", "F-mixolydian-6♭": "♭", "F♯-mixolydian-6♭": "♯",
     "A-aeolian": "♮", "B♭-aeolian": "♭", "B-aeolian": "♯", "C-aeolian": "♭", "C♯-aeolian": "♯", "D-aeolian": "♭", "D♯-aeolian": "♯", "E-aeolian": "♯", "F-aeolian": "♭", "F♯-aeolian": "♯", "G-aeolian": "♭", "G♯-aeolian": "♯",
     "B-locrian": "♮", "C-locrian": "♭", "C♯-locrian": "♯", "D-locrian": "♭", "D♯-locrian": "♯", "E-locrian": "♭", "F-locrian": "♯", "F♯-locrian": "♯", "G-locrian": "♭", "G♯-locrian": "♯", "A-locrian": "♭", "A♯-locrian": "♯",
@@ -76,15 +80,71 @@
   sharpScale = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B", "C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"
   ],
   scales = [
-    [0, 2, 4, 5, 7, 9, 11, 12],
-    [0, 2, 3, 5, 7, 9, 10, 12],
-    [0, 1, 3, 5, 7, 8, 10, 12],
-    [0, 1, 4, 5, 7, 8, 10, 12],
-    [0, 2, 4, 6, 7, 9, 11, 12],
-    [0, 2, 4, 5, 7, 9, 10, 12],
-    [0, 2, 4, 5, 7, 8, 10, 12],
-    [0, 2, 3, 5, 7, 8, 10, 12],
-    [0, 1, 3, 5, 6, 8, 10, 12],
+    [0, 2, 4, 5, 7, 9, 11, 12],       // Ionian (AKA Major)
+    [0, 2, 4, 5, 7, 8, 9, 11, 12],    // Ionian Bebop: 1 2 3 4 5 ♭6 6 7
+    [0, 2, 3, 5, 7, 9, 10, 12],       // Dorian
+    [0, 2, 3, 4, 5, 7, 9, 10, 12],    // Dorian Bebop: 1 2 ♭3 3 4 5 6 ♭7
+    [0, 1, 3, 5, 7, 8, 10, 12],       // Phrygian
+    [0, 1, 4, 5, 7, 8, 10, 12],       // Phrygian Dominant
+    [0, 2, 4, 6, 7, 9, 11, 12],       // Lydian
+    [0, 2, 4, 5, 7, 9, 10, 12],       // Mixolydian
+    [0, 2, 4, 5, 7, 9, 10, 11, 12],   // Mixolydian Bebop: 1 2 3 4 5 6 ♭7 7
+    [0, 1, 4, 5, 7, 8, 10, 11, 12],   // Mixolydian ♭9 ♭13 Bebop: 1 ♭2 3 4 5 ♭6 ♭7 7
+    [0, 2, 4, 5, 7, 8, 10, 12],       // Mixolydian Flat 6
+    [0, 2, 3, 5, 7, 8, 10, 12],       // Aeolian (AKA Natural Minor)
+    [0, 1, 3, 5, 6, 8, 10, 12],       // Locrian
+  
+    [0, 2, 4, 7, 7, 9, 9],            // Major Pentatonic
+    [0, 3, 3, 5, 7, 10, 10],          // Minor Pentatonic
+  
+    [0, 2, 3, 4, 7, 9, 12],           // Major Blues
+    [0, 3, 5, 6, 7, 10, 12],          // Minor Blues
+  
+    [0, 2, 3, 5, 7, 8, 11, 12],       // Harmonic Minor
+    [0, 2, 3, 5, 7, 9, 11, 12],       // Melodic Minor (ascending)
+    [0, 2, 3, 5, 7, 9, 11, 12],       // Melodic Minor (descending)
+    [0, 1, 4, 6, 8, 10, 11, 12],      // Enigmatic
+  
+    [0, 2, 3, 6, 7, 8, 11, 11],       // Algerian
+    [0, 2, 3, 5, 6, 8, 9, 11, 12],    // Arabian (AKA Diminished)
+    [0, 1, 4, 5, 7, 8, 11, 12],       // Byzantine
+    [0, 2, 5, 7, 7, 10, 10],          // Egyptian
+    [0, 1, 4, 5, 6, 8, 11, 12],       // Persian
+    [0, 2, 4, 5, 7, 8, 10],           // Hindu
+    [0, 1, 5, 5, 7, 8, 8],            // Asavari (ascending)
+    [0, 1, 3, 5, 7, 8, 10],           // Asavari (descending)
+  
+    [0, 2, 3, 3, 7, 8, 8],            // Hirajōshi
+    [0, 2, 5, 5, 7, 9, 9],            // Yo
+    [0, 1, 3, 5, 7, 8, 10],           // In
+    [0, 1, 5, 5, 7, 10, 10],          // Insen
+  
+    [0, 1, 3, 5, 7, 9, 11, 12],       // Neopolitan Major
+    [0, 1, 3, 5, 7, 8, 11, 12],       // Neopolitan Minor
+    [0, 2, 3, 6, 7, 8, 11, 12],       // Hungarian Gypsy
+    [0, 1, 4, 5, 7, 8, 10, 12],       // Spanish Gypsy
+    [0, 2, 3, 6, 7, 9, 10, 12],       // Ukrainian Dorian
+    [0, 1, 3, 4, 5, 7, 8, 10, 12],    // Moorish Phrygian
+    [0, 2, 4, 6, 8, 10, 12],          // Mixo-Dorian Blues
+    [0, 1, 3, 4, 6, 7, 9, 10, 11],    // Half-Whole Diminished
+  
+    [0, 2, 4, 6, 8, 10, 12],          // Messiaen First Mode (Whole Tone)
+    [0, 2, 3, 4, 6, 7, 8, 10, 11, 12], // Messiaen Second Mode
+    [0, 1, 2, 5, 6, 7, 8, 11, 12],    // Messiaen Third Mode
+    [0, 1, 5, 6, 7, 11, 12],          // Messiaen Fourth Mode
+    [0, 2, 4, 5, 6, 8, 10, 11, 12],   // Messiaen Fifth Mode
+    [0, 1, 2, 3, 5, 6, 7, 8, 9, 11, 12] // Messiaen Sixth Mode
+  ],
+  scalesx = [
+    [0, 2, 4, 5, 7, 9, 11, 12],  // C Ionian
+    [0, 2, 3, 5, 7, 9, 10, 12],  // C Ionian bebop
+    [0, 1, 3, 5, 7, 8, 10, 12],  // D Dorian
+    [0, 1, 4, 5, 7, 8, 10, 12],  // E Phrygian
+    [0, 2, 4, 6, 7, 9, 11, 12],  // E Phyrgian Dominant
+    [0, 2, 4, 5, 7, 9, 10, 12],  // F Lydian
+    [0, 2, 4, 5, 7, 8, 10, 12],  // G Mixolydian
+    [0, 2, 3, 5, 7, 8, 10, 12],  // G Mixolydian flat 6
+    [0, 1, 3, 5, 6, 8, 10, 12],  // A Aeolian
 
     [0, 2, 4, 7, 7, 9, 9],
     [0, 3, 3, 5, 7, 10, 10],
