@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Guitar Arpeggio Explorer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+    :root{--bg:#f1f5f9;--panel:#fff;--text:#0f172a;--mute:#64748b;--line:#cbd5e1;--string:#94a3b8;--chord:#2563eb;--root:#dc2626;--scale:#10b981;--out:#f59e0b;--blue:#8b5cf6;--ring:#0f172a;--field:#f8fafc;
+    box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--panel:#1e293b;--text:#f8fafc;--mute:#94a3b8;--line:#475569;--string:#94a3b8;--ring:#f8fafc;--field:#0f172a;color-scheme:dark}}
+    :root[data-theme="dark"]{--bg:#0f172a;--panel:#1e293b;--text:#f8fafc;--mute:#94a3b8;--line:#475569;--string:#94a3b8;--ring:#f8fafc;--field:#0f172a;color-scheme:dark}
+    html{
+      scroll-padding-top:env(safe-area-inset-top,0px)
+    }
+    body{
+      margin:0; padding:16px;
+      background:var(--bg);
+      color:var(--text);
+      font-family: "Dosis", sans-serif; system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      font-size: 140%;
+    }
+    .wrap{
+      max-width:1100px;
+      margin: 4em auto;
+    }
+    h1{
+      font-size: 300%;
+      font-weight:700;margin:0 0 4px;width:fit-content;max-width:100%;
+      background:linear-gradient(to right,#60a5fa,#34d399);-webkit-background-clip:text;
+      background-clip:text;color:transparent;-webkit-text-fill-color:transparent
+    }
+    .sub{
+      margin: 1em 0;
+      color:var(--mute);
+      font-size:1.2rem;
+    }
+    .panel{
+      background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px
+    }
+    .controls{
+      display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-end;
+    }
+    label{
+      display:flex;flex-direction:column;
+      font-size:1.2rem;
+      color:var(--mute);gap:3px
+    }
+    select, button {
+      font: inherit;
+      font-size: 1.0rem;
+      padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--field);color:var(--text)
+    }
+    button{cursor:pointer}button:hover{border-color:var(--chord)}
+    .row{
+      display:flex;gap:6px;align-items:center;flex-wrap:wrap
+    }
+    .scroll{
+      overflow-x:auto
+    }
+    svg{
+      display:block;min-width:760px;width:100%;height:auto;
+    }
+    .fl{
+      stroke:var(--line);stroke-width:2}.st{stroke:var(--string)}.nut{stroke:var(--text);stroke-width:5
+    }
+    .mk{
+      fill:var(--line);
+      opacity:.6}.fn{fill:var(--mute);
+      font-size: 0.8rem;
+      text-anchor: middle;
+    }
+    .nt{
+      font-size:11px;
+      font-weight:700;text-anchor:middle;fill:#fff;pointer-events:none
+    }
+    .legend{display:flex;flex-wrap:wrap;gap:6px 16px;
+      font-size:0.9rem;
+      color:var(--mute);margin-top:8px;
+    }
+    .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-2px}
+    #info p{
+      margin: 0.7em 0;
+      font-size:1.2rem;
+    }
+    .copyright { 
+      color:var(--mute);
+      font-size: small; text-align: right; 
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+<h1>Guitar Arpeggio Explorer</h1>
+<p class="sub">
+  Choose a key and mode, then pick a chord, either one the scale produces or any chord you like, to see its tones against the scale.
+</p>
+<div class="panel controls">
+  <label>Key <select id="key"></select></label>
+  <label>Mode / scale <select id="scale"></select></label>
+  <label>Chord root <select id="croot"></select></label>
+  <label>Chord type <select id="cq"></select></label>
+  <label>Pentatonic overlay <select id="pent">
+    <option value="">Off</option>
+    <option value="m:key">Minor, key root</option>
+    <option value="M:key">Major, key root</option>
+    <option value="m:chord">Minor, chord root</option>
+    <option value="M:chord">Major, chord root</option></select></label>
+  <label>Labels <select id="lab"><option value="n">Note names</option><option value="d">Chord degrees</option></select></label>
+</div>
+<div class="panel" style="padding-top: 0.5em">
+  <label>Chords built from this key and mode (click to overlay)<span class="row" id="dia" style="margin-top:0.4em"></span></label>
+</div>
+
+<div class="panel">
+  <div class="scroll"><div id="board"></div></div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--root)"></i>chord root</span>
+    <span><i class="dot" style="background:var(--chord)"></i>chord tone (in scale)</span>
+    <span><i class="dot" style="background:var(--out)"></i>chord tone outside scale</span>
+    <span><i class="dot" style="background:var(--scale);opacity:.6"></i>scale note</span>
+    <span><i class="dot" style="background:var(--blue)"></i>pentatonic note outside scale</span>
+    <span><i class="dot" style="border:2px solid var(--ring)"></i>in pentatonic overlay</span>
+  </div>
+</div>
+
+<div class="panel" id="info"></div>
+<p class="copyright">Copyright &copy;2026 Murray Altheim. All Rights Reserved.</p>
+</div>
+
+<script>
+const SH=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const FL=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const SCALES={Ionian:[0,2,4,5,7,9,11],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],Aeolian:[0,2,3,5,7,8,10],Locrian:[0,1,3,5,6,8,10],'Pentatonic Major':[0,2,4,7,9],'Pentatonic Minor':[0,3,5,7,10],'Harmonic Major':[0,2,4,5,7,8,11],'Harmonic Minor':[0,2,3,5,7,8,11]};
+const CH={
+  '':{n:'(no chord)',iv:[],dg:[]},
+  '7':{n:'7',iv:[0,4,7,10],dg:['1','3','5','♭7']},
+  'maj7':{n:'maj7',iv:[0,4,7,11],dg:['1','3','5','7']},
+  'm7':{n:'m7',iv:[0,3,7,10],dg:['1','♭3','5','♭7']},
+  'maj':{n:'major',iv:[0,4,7],dg:['1','3','5']},
+  'm':{n:'minor',iv:[0,3,7],dg:['1','♭3','5']},
+  'm7b5':{n:'m7♭5',iv:[0,3,6,10],dg:['1','♭3','♭5','♭7']},
+  'dim7':{n:'dim7',iv:[0,3,6,9],dg:['1','♭3','♭5','𝄫7']},
+  'sus4':{n:'sus4',iv:[0,5,7],dg:['1','4','5']},
+  'mMaj7':{n:'m(maj7)',iv:[0,3,7,11],dg:['1','♭3','5','7']},
+  'maj7#5':{n:'maj7♯5',iv:[0,4,8,11],dg:['1','3','♯5','7']}
+};
+const PENT={m:[0,3,5,7,10],M:[0,2,4,7,9]};
+const OPEN=[4,11,7,2,9,4]; // high E on top
+const FRETS=15,$=id=>document.getElementById(id);
+const rootSel=[...SH].map((n,i)=>`<option value="${i}">${n==='C♯'?'C♯/D♭':n==='D♯'?'D♯/E♭':n==='F♯'?'F♯/G♭':n==='G♯'?'G♯/A♭':n==='A♯'?'A♯/B♭':n}</option>`).join('');
+$('key').innerHTML=rootSel;$('croot').innerHTML=rootSel;
+$('scale').innerHTML=Object.keys(SCALES).map(s=>`<option>${s}</option>`).join('');
+$('cq').innerHTML=Object.keys(CH).map(k=>`<option value="${k}">${CH[k].n}</option>`).join('');
+$('key').value=9;$('scale').value='Mixolydian';$('croot').value=9;$('cq').value='7';
+
+function render(){
+  const key=+$('key').value,scale=SCALES[$('scale').value],cr=+$('croot').value,ch=CH[$('cq').value];
+  const names=[1,3,5,8,10].includes(key)?FL:SH;
+  const sc=new Set(scale.map(i=>(key+i)%12));
+  const cMap=new Map(ch.iv.map((i,k)=>[(cr+i)%12,ch.dg[k]]));
+  const pv=$('pent').value;let pc=new Set();
+  if(pv){const[t,r]=pv.split(':');const pr=r==='key'?key:cr;pc=new Set(PENT[t].map(i=>(pr+i)%12));}
+  const deg=$('lab').value==='d';
+  const sp=60,nx=50,top=30,ss=28,H=top+5*ss+38,W=nx+FRETS*sp+20;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  [3,5,7,9,15].forEach(f=>s+=`<circle class="mk" cx="${nx+f*sp-sp/2}" cy="${top+2.5*ss}" r="7"/>`);
+  s+=`<circle class="mk" cx="${nx+12*sp-sp/2}" cy="${top+1.5*ss}" r="7"/><circle class="mk" cx="${nx+12*sp-sp/2}" cy="${top+3.5*ss}" r="7"/>`;
+  for(let i=0;i<6;i++)s+=`<line class="st" x1="20" x2="${W-10}" y1="${top+i*ss}" y2="${top+i*ss}" style="stroke-width:${1+i*.4}"/>`;
+  s+=`<line class="nut" x1="${nx}" x2="${nx}" y1="${top}" y2="${top+5*ss}"/>`;
+  for(let f=1;f<=FRETS;f++){const x=nx+f*sp;s+=`<line class="fl" x1="${x}" x2="${x}" y1="${top}" y2="${top+5*ss}"/><text class="fn" x="${x-sp/2}" y="${H-12}">${f}</text>`;}
+  s+=`<text class="fn" x="25" y="${H-12}">Open</text>`;
+  for(let i=0;i<6;i++)for(let f=0;f<=FRETS;f++){
+    const p=(OPEN[i]+f)%12,x=f?nx+f*sp-sp/2:25,y=top+i*ss;
+    const inC=cMap.has(p),inS=sc.has(p),inP=pc.has(p);
+    let fill=null,op=1;
+    if(inC&&p===cr)fill='var(--root)';
+    else if(inC&&inS)fill='var(--chord)';
+    else if(inC)fill='var(--out)';
+    else if(inS){fill='var(--scale)';op=.55;}
+    else if(inP)fill='var(--blue)';
+    if(!fill&&!inP)continue;
+    const ring=inP?'stroke="var(--ring)" stroke-width="2.5"':'stroke="none"';
+    s+=`<circle cx="${x}" cy="${y}" r="11" fill="${fill||'none'}" opacity="${fill?op:1}" ${ring}/>`;
+    if(fill)s+=`<text class="nt" x="${x}" y="${y+4}">${deg&&inC?cMap.get(p):names[p]}</text>`;
+  }
+  $('board').innerHTML=s+'</svg>';buildDia();
+
+  const list=a=>a.map(p=>names[p]).join(' ');
+  const key_=names[key]+' '+$('scale').value;
+  let h=`<p><b>Scale:</b> ${key_} = ${list([...scale.map(i=>(key+i)%12)])}</p>`;
+  if(ch.iv.length){
+    const cn=names[cr]+(ch.n==='major'?'':ch.n==='minor'?'m':ch.n);
+    const tones=ch.iv.map(i=>(cr+i)%12),out=tones.filter(p=>!sc.has(p));
+    h+=`<p><b>${cn}:</b> ${list(tones)} (${ch.dg.join(' ')})</p>`;
+    h+=out.length?`<p style="color:var(--out)"><b>Outside the scale:</b> ${list(out)}. This is the note that makes the change interesting; look for the half-step move into or out of it.</p>`
+      :`<p><b>All chord tones are inside the scale.</b></p>`;
+  }
+  $('info').innerHTML=h;
+}
+['key','scale','croot','cq','pent','lab'].forEach(id=>$(id).onchange=render);
+function buildDia(){
+  const key=+$('key').value,sc=SCALES[$('scale').value],names=[1,3,5,8,10].includes(key)?FL:SH;
+  const cr=+$('croot').value,cq=$('cq').value,box=$('dia');box.innerHTML='';
+  if(sc.length!==7){box.innerHTML='<span style="color:var(--mute);font-size:.85rem">Chords are stacked from 7-note scales. Pick a mode or a harmonic scale, or choose any chord above.</span>';return;}
+  sc.forEach((r,i)=>{
+    const iv=[0,2,4,6].map(k=>(sc[(i+k)%7]-r+12)%12);
+    const q=Object.keys(CH).find(k=>k&&CH[k].iv.length===4&&CH[k].iv.every((v,j)=>v===iv[j]));
+    if(!q)return;
+    const root=(key+r)%12,b=document.createElement('button');
+    b.textContent=names[root]+q.replace('b5','♭5').replace('#5','♯5');
+    if(root===cr&&q===cq){b.style.borderColor='var(--chord)';b.style.fontWeight='700';}
+    b.onclick=()=>{$('croot').value=root;$('cq').value=q;render();};
+    box.appendChild(b);
+  });
+}
+render();
+</script>
+</body>
+</html>
