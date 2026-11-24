@@ -14,3 +14,6 @@
 }
 .position button { font-size: 60%; padding: 0.1em 0.5em; }
 #positionlabel { white-space: nowrap; }
+#svg2 tspan {
+  font-size: 0.95em;
+}
