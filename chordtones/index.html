@@ -15,7 +15,7 @@
     }
     #extlist label:has(input:disabled) { opacity: 0.35; }
     #chordformula {
-      color: #e3c5ff; font-size: 220%; margin: 0 0 0 0;
+      color: #c397ed; font-size: 100%; margin: 0 0 0 1em;
     }
     .position {
       display: flex; align-items: center; justify-content: flex-end; gap: 0.6em;
@@ -23,6 +23,12 @@
     }
     .position button { font-size: 60%; padding: 0.1em 0.5em; }
     #positionlabel { white-space: nowrap; }
+    div.svg {
+      margin: 1em auto ;
+      padding: 1em 1em 0em 1em;
+      background-color: #eeeeee ;
+      transform: scale(1.0, 1.0);
+    }
     #svg2 tspan {
       font-size: 0.95em;
     }
@@ -33,8 +39,7 @@
 <table id="thead" summary="formatting">
   <tbody><tr>
     <td width="50%" align="left">
-      <h1>Chord Tones: <span id="chordtitle"></span></h1>
-      <p id="chordformula"></p>
+      <h1>Chord Tones: <span id="chordtitle"></span>&nbsp;<span id="chordformula"></span></h1>
     </td>
     <td width="50%" valign="top" align="right">
       <h1 id="xlink"><a href="../fretboard/">Notes in Scale</a></h1>
