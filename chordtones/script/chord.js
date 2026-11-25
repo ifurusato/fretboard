@@ -1,13 +1,14 @@
 /*
  * JavaScript for Barkhausen Fretboard: Chord Tones
- * Copyright 2015-2026 Murray Altheim. All Rights Reserved.
+ * Copyright 2026 Murray Altheim. All Rights Reserved.
  */
 
   var rootColor = '#2772de',
     defaultColor = '#3a5f94',
     openStrings = [4, 11, 7, 2, 9, 4],
     fretCount = 24,
-    windowSize = 4,
+    defaultSpan = 5,
+    windowSize = defaultSpan,
     markers = [3, 5, 7, 9, 15, 17, 19, 21],
     rootNames = ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"],
     qualityGroups = ["Triads", "Sixths", "Sevenths"],
@@ -210,6 +211,7 @@
       root: $('#rootselect').val(),
       quality: $('#qualityselect').val(),
       extensions: $('#extlist input:checked').map(function() { return Number($(this).val()); }).get(),
+      span: windowSize,
       base: displayBase
     }));
   }
@@ -220,6 +222,10 @@
     $('#rootselect').val(saved.root);
     $('#qualityselect').val(saved.quality);
     saved.extensions.forEach(function(i) { box(i).prop('checked', true); });
+    if (saved.span !== undefined) {
+      windowSize = saved.span;
+      $('#spanselect').val(saved.span);
+    }
     pendingBase = saved.base;
   }
 
@@ -279,6 +285,10 @@
     extensions.forEach(function(e, i) {
       $('#extlist').append($('<label>').append($('<input type="checkbox">').attr('value', i)).append(' ' + e.label + ' '));
     });
+    [4, 5, 6].forEach(function(n) {
+      $('#spanselect').append($('<option>').attr('value', n).text(n + ' frets'));
+    });
+    $('#spanselect').val(defaultSpan);
 
     buildBoard();
 
@@ -286,6 +296,10 @@
     $('#extlist').on('change', 'input', function() { update(true); });
     $('#prev').bind('click', function() { step(-1); });
     $('#next').bind('click', function() { step(1); });
+    $('#spanselect').bind('change', function() {
+      windowSize = Number($(this).val());
+      update(false);
+    });
     $(document).bind('keydown', function(e) {
       if (e.key === 'ArrowLeft') { step(-1); }
       if (e.key === 'ArrowRight') { step(1); }
